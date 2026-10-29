@@ -1,15 +1,14 @@
-"use client";
+import { requireAuth } from "@/lib/auth-guard";
+import { caller } from "@/trpc/server";
 
-import { useQuery } from "@tanstack/react-query";
-import { useTRPC } from "@/trpc/client";
+export default async function Home() {
+  await requireAuth();
 
-export default function Home() {
-  const trpc = useTRPC();
-  const { data: posts } = useQuery(trpc.getPosts.queryOptions());
+  const user = await caller.getUser();
 
   return (
     <div>
-      <p>{JSON.stringify(posts, null, 2)}</p>
+      <p>{JSON.stringify(user, null, 2)}</p>
     </div>
   );
 }

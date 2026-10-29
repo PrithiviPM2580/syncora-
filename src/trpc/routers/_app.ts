@@ -1,9 +1,18 @@
 import prisma from "@/lib/db";
-import { baseProcedure, createTRPCRouter } from "../init";
+import { createTRPCRouter, protectedProcedure } from "../init";
 export const appRouter = createTRPCRouter({
-  getPosts: baseProcedure.query(async () => {
-    const posts = await prisma.post.findMany();
-    return posts;
+  getUser: protectedProcedure.query(async ({ ctx }) => {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: ctx.auth.user.id,
+      },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return user;
   }),
 });
 // export type definition of API

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/client";
 
@@ -35,7 +36,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
     >
       <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          {children}
+          <Toaster />
+        </TRPCReactProvider>
       </body>
     </html>
   );
