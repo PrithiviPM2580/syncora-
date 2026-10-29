@@ -1,10 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -68,9 +68,21 @@ export default function SignInForm() {
           <FieldGroup>
             <Field orientation="vertical">
               <Button type="button" variant="outline">
+                <Image
+                  src="./logos/google.svg"
+                  alt="Google"
+                  width={20}
+                  height={20}
+                />
                 Continue with Google
               </Button>
               <Button type="button" variant="outline">
+                <Image
+                  src="./logos/github.svg"
+                  alt="Github"
+                  width={20}
+                  height={20}
+                />
                 Continue with Github
               </Button>
             </Field>
