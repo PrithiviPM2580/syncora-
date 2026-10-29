@@ -1,3 +1,5 @@
 procs:
+  inngest:
+    cmd: ["bun", "run", "inngest:dev"]
   next:
     cmd: ["bun", "run", "dev"]
