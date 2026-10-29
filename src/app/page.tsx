@@ -1,7 +1,12 @@
-import prisma from "@/lib/db";
+"use client";
 
-export default async function Home() {
-  const posts = await prisma.post.findMany();
+import { useQuery } from "@tanstack/react-query";
+import { useTRPC } from "@/trpc/client";
+
+export default function Home() {
+  const trpc = useTRPC();
+  const { data: posts } = useQuery(trpc.getPosts.queryOptions());
+
   return (
     <div>
       <p>{JSON.stringify(posts, null, 2)}</p>
