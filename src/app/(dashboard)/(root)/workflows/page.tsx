@@ -1,14 +1,27 @@
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import {
+  WorkflowContainer,
+  WorkflowList,
+} from "@/feature/workflows/components/workflows";
+import { prefetchWorkflows } from "@/feature/workflows/server/prefetch";
 import { requireAuth } from "@/lib/auth-guard";
-import { caller } from "@/trpc/server";
+import { HydrateClient } from "@/trpc/server";
 
 export default async function Home() {
   await requireAuth();
 
-  const user = await caller.getUser();
+  prefetchWorkflows();
 
   return (
-    <div>
-      <p>{JSON.stringify(user, null, 2)}</p>
-    </div>
+    <WorkflowContainer>
+      <HydrateClient>
+        <ErrorBoundary fallback={<p>Something went wrong</p>}>
+          <Suspense fallback={<p>Loading...</p>}>
+            <WorkflowList />
+          </Suspense>
+        </ErrorBoundary>
+      </HydrateClient>
+    </WorkflowContainer>
   );
 }
