@@ -5,7 +5,11 @@ import {
   premiumProcedure,
   protectedProcedure,
 } from "@/trpc/init";
-import { updateWorkflowSchema, workflowIdSchema } from "../schema/workflow";
+import {
+  updateWorkflowSchema,
+  workflowIdSchema,
+  workflowPaginationSchema,
+} from "../schema/workflow";
 
 export const workflowRouter = createTRPCRouter({
   create: premiumProcedure.mutation(async ({ ctx }) => {
@@ -51,11 +55,49 @@ export const workflowRouter = createTRPCRouter({
       });
     }),
 
-  getMany: protectedProcedure.query(async ({ ctx }) => {
-    return prisma.workflow.findMany({
-      where: {
-        userId: ctx.auth.user.id,
-      },
-    });
-  }),
+  getMany: protectedProcedure
+    .input(workflowPaginationSchema)
+    .query(async ({ ctx, input }) => {
+      const { page, pageSize, search } = input;
+
+      const [items, totalCount] = await Promise.all([
+        prisma.workflow.findMany({
+          skip: (page - 1) * pageSize,
+          take: pageSize,
+          where: {
+            userId: ctx.auth.user.id,
+            name: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          orderBy: {
+            updatedAt: "desc",
+          },
+        }),
+        prisma.workflow.count({
+          where: {
+            userId: ctx.auth.user.id,
+            name: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        }),
+      ]);
+
+      const totalPages = Math.ceil(totalCount / pageSize);
+      const hasNextPage = page < totalPages;
+      const hasPreviousPage = page > 1;
+
+      return {
+        items,
+        page,
+        pageSize,
+        totalCount,
+        totalPages,
+        hasNextPage,
+        hasPreviousPage,
+      };
+    }),
 });

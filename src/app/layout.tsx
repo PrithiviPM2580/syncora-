@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -39,8 +40,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <body>
         <TRPCReactProvider>
-          <TooltipProvider>{children}</TooltipProvider>
-          <Toaster />
+          <NuqsAdapter>
+            <TooltipProvider>{children}</TooltipProvider>
+            <Toaster />
+          </NuqsAdapter>
         </TRPCReactProvider>
       </body>
     </html>
