@@ -27,10 +27,15 @@
         "useSemanticElements": "off",
         "noLabelWithoutControl": "off",
         "useFocusableInteractive": "off",
-        "noNoninteractiveTabindex": "off"
+        "noNoninteractiveTabindex": "off",
+        "noStaticElementInteractions": "off",
+        "useKeyWithClickEvents": "off"
       },
       "suspicious": {
         "noArrayIndexKey": "off"
+      },
+      "complexity": {
+        "noUselessFragments": "off"
       }
     },
     "domains": {

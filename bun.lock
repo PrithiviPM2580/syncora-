@@ -10,6 +10,7 @@
         "@ai-sdk/openai": "^4.0.105",
         "@base-ui/react": "^1.9.0",
         "@hookform/resolvers": "^6.0.2",
+        "@paralleldrive/cuid2": "^3.3.0",
         "@polar-sh/better-auth": "^2.1.3",
         "@polar-sh/sdk": "^1.0.2",
         "@prisma/adapter-neon": "^7.10.1",
@@ -467,6 +468,8 @@
 
     "@opentelemetry/sql-common": ["@opentelemetry/sql-common@0.43.0", "", { "dependencies": { "@opentelemetry/core": "^3.0.0" }, "peerDependencies": { "@opentelemetry/api": "^1.1.0" } }, "sha512-r5FfJFAbRIW+7YkXkD8XBEuExf1RyesrLrzyB1If/hTqxEAUaGPZihgrPLPX+UFq4b20YtHDmFBptNffPAJXjQ=="],
 
+    "@paralleldrive/cuid2": ["@paralleldrive/cuid2@3.3.0", "", { "dependencies": { "@noble/hashes": "^2.0.1", "bignumber.js": "^9.3.1", "error-causes": "^3.0.2" }, "bin": { "cuid2": "bin/cuid2.js" } }, "sha512-OqiFvSOF0dBSesELYY2CAMa4YINvlLpvKOz/rv6NeZEqiyttlHgv98Juwv4Ch+GrEV7IZ8jfI2VcEoYUjXXCjw=="],
+
     "@pkgjs/parseargs": ["@pkgjs/parseargs@0.11.0", "", {}, "sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg=="],
 
     "@polar-sh/adapter-utils": ["@polar-sh/adapter-utils@1.1.0", "", { "dependencies": { "@polar-sh/sdk": "1.0.2", "zod": "^4.6.5" } }, "sha512-v2bh7wggBx7Sp4E9qFWDI3IN4vojSq0q2isl/ek2mi86JoNzjfgn+xJkYGgwGoc+e45P0egJTmiueEWTLGgPxw=="],
@@ -874,6 +877,8 @@
     "enquirer": ["enquirer@2.4.1", "", { "dependencies": { "ansi-colors": "^4.1.1", "strip-ansi": "^6.0.1" } }, "sha512-rRqJg/6gd538VHvR3PSrdRBb/1Vy2YfzHqzvbhGIQpDRKIa4FgV/54b5Q1xYSxOOwKvjXweS26E0Q+nAMwp2pQ=="],
 
     "env-paths": ["env-paths@2.2.1", "", {}, "sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A=="],
+
+    "error-causes": ["error-causes@3.0.2", "", {}, "sha512-i0B8zq1dHL6mM85FGoxaJnVtx6LD5nL2v0hlpGdntg5FOSyzQ46c9lmz5qx0xRS2+PWHGOHcYxGIBC5Le2dRMw=="],
 
     "es-errors": ["es-errors@1.3.0", "", {}, "sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw=="],
 
