@@ -26,7 +26,8 @@
       "a11y": {
         "useSemanticElements": "off",
         "noLabelWithoutControl": "off",
-        "useFocusableInteractive": "off"
+        "useFocusableInteractive": "off",
+        "noNoninteractiveTabindex": "off"
       },
       "suspicious": {
         "noArrayIndexKey": "off"
