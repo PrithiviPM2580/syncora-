@@ -8,6 +8,7 @@ import {
   protectedProcedure,
 } from "@/trpc/init";
 import {
+  updateNameWorkflowSchema,
   updateWorkflowSchema,
   workflowIdSchema,
   workflowPaginationSchema,
@@ -40,8 +41,8 @@ export const workflowRouter = createTRPCRouter({
         },
       });
     }),
-  update: protectedProcedure
-    .input(updateWorkflowSchema)
+  updateName: protectedProcedure
+    .input(updateNameWorkflowSchema)
     .mutation(async ({ ctx, input }) => {
       return prisma.workflow.update({
         where: {
@@ -134,5 +135,57 @@ export const workflowRouter = createTRPCRouter({
         hasNextPage,
         hasPreviousPage,
       };
+    }),
+  update: protectedProcedure
+    .input(updateWorkflowSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { id, nodes, edges } = input;
+
+      const workflow = await prisma.workflow.findUniqueOrThrow({
+        where: {
+          id,
+          userId: ctx.auth.user.id,
+        },
+      });
+
+      return await prisma.$transaction(async (tx) => {
+        await tx.node.deleteMany({
+          where: {
+            workflowId: workflow.id,
+          },
+        });
+
+        await tx.node.createMany({
+          data: nodes.map((node) => ({
+            id: node.id,
+            workflowId: id,
+            name: node.type || "unknown",
+            type: node.type as NodeType,
+            position: node.position,
+            data: node.data || {},
+          })),
+        });
+
+        await tx.connection.createMany({
+          data: edges.map((edge) => ({
+            workflowId: id,
+            fromNodeId: edge.source,
+            toNodeId: edge.target,
+            fromOutput: edge.sourceHandle || "main",
+            toInput: edge.targetHandle || "main",
+          })),
+        });
+
+        await tx.workflow.update({
+          where: {
+            id,
+          },
+          data: {
+            updatedAt: new Date(),
+          },
+        });
+
+        return workflow;
+      });
     }),
 });
