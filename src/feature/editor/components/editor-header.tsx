@@ -1,5 +1,6 @@
 "use client";
 
+import { useAtomValue } from "jotai";
 import { SaveIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -15,13 +16,30 @@ import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   useSuspenseWorkflow,
+  useUpdateNameWorkflow,
   useUpdateWorkflow,
 } from "@/feature/workflows/hooks/use-workflows";
+import { editorAtom } from "../store/atom";
 
-export const EditorSaveButton = () => {
+export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
+  const editor = useAtomValue(editorAtom);
+  const saveWorkflow = useUpdateWorkflow();
+
+  const handleSave = async () => {
+    if (!editor) return;
+
+    const nodes = editor.getNodes();
+    const edges = editor.getEdges();
+
+    saveWorkflow.mutate({
+      id: workflowId,
+      nodes,
+      edges,
+    });
+  };
   return (
     <div className="ml-auto">
-      <Button size="sm" onClick={() => {}} disabled={false}>
+      <Button size="sm" onClick={handleSave} disabled={saveWorkflow.isPending}>
         <SaveIcon className="size-4" />
         Save
       </Button>
@@ -32,7 +50,7 @@ export const EditorSaveButton = () => {
 export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
   const { data: workflow } = useSuspenseWorkflow(workflowId);
 
-  const updateWorkflow = useUpdateWorkflow();
+  const updateWorkflow = useUpdateNameWorkflow();
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [name, setName] = useState<string>(workflow.name);
@@ -126,7 +144,7 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
       <SidebarTrigger />
       <div className="flex flex-row items-center justify-between gap-x-4 w-full">
         <EditorBreadcrumbs workflowId={workflowId} />
-        <EditorSaveButton />
+        <EditorSaveButton workflowId={workflowId} />
       </div>
     </header>
   );
