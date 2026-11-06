@@ -1,18 +1,32 @@
-import { httpRequestExecutor } from "@/feature/execution/components/http-request/executor";
+import {
+  type HttpRequestData,
+  httpRequestExecutor,
+} from "@/feature/execution/components/http-request/executor";
 import type { NodeExecutor } from "@/feature/execution/types";
-import { manualTriggerExecutor } from "@/feature/trigger/components/manual-trigger/executor";
+import {
+  type ManualTriggerData,
+  manualTriggerExecutor,
+} from "@/feature/trigger/components/manual-trigger/executor";
 import { NodeType } from "@/generated/prisma/enums";
 
-export const executorRegistry: Record<NodeType, NodeExecutor> = {
+type NodeDataMap = {
+  [NodeType.INITIAL]: ManualTriggerData;
+  [NodeType.MANUAL_TRIGGER]: ManualTriggerData;
+  [NodeType.HTTP_REQUEST]: HttpRequestData;
+};
+
+type ExecutorRegistry = {
+  [K in keyof NodeDataMap]: NodeExecutor<NodeDataMap[K]>;
+};
+
+export const executorRegistry: ExecutorRegistry = {
   [NodeType.INITIAL]: manualTriggerExecutor,
   [NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
   [NodeType.HTTP_REQUEST]: httpRequestExecutor,
 };
 
-export const getExecutor = (nodeType: NodeType): NodeExecutor => {
-  const executor = executorRegistry[nodeType];
-  if (!executor) {
-    throw new Error(`Executor not found for node type: ${nodeType}`);
-  }
-  return executor;
+export const getExecutor = <T extends NodeType>(
+  nodeType: T,
+): NodeExecutor<NodeDataMap[T]> => {
+  return executorRegistry[nodeType];
 };

@@ -10,7 +10,7 @@ Handlebars.registerHelper("json", (context) => {
   return safeString;
 });
 
-type HttpRequestData = {
+export type HttpRequestData = {
   variableName: string;
   endpoint: string;
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -42,7 +42,7 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
     const options: KyOptions = { method };
 
     if (["POST", "PUT", "PATCH"].includes(method) && data.body) {
-      const resolved = Handlebars.compile(data.body)(context);
+      const resolved = Handlebars.compile(data.body || "{}")(context);
       JSON.parse(resolved);
       options.body = resolved;
       options.headers = {
