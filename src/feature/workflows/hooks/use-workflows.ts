@@ -118,3 +118,24 @@ export const useSuspenseWorkflow = (workflowId: string) => {
   const trpc = useTRPC();
   return useSuspenseQuery(trpc.workflows.getOne.queryOptions({ workflowId }));
 };
+
+export const useExecuteWorkflow = () => {
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.workflows.execute.mutationOptions({
+      onSuccess: (data) => {
+        toast.add({
+          type: "success",
+          description: `Workflow ${data.name} executed successfully`,
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          type: "error",
+          description: `Error executing workflow: ${error.message}`,
+        });
+      },
+    }),
+  );
+};

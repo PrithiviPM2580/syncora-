@@ -1,6 +1,7 @@
 import type { Edge, Node } from "@xyflow/react";
 import { generateSlug } from "random-word-slugs";
 import { NodeType } from "@/generated/prisma/enums";
+import { inngest } from "@/inngest/client";
 import prisma from "@/lib/db";
 import {
   createTRPCRouter,
@@ -15,6 +16,25 @@ import {
 } from "../schema/workflow";
 
 export const workflowRouter = createTRPCRouter({
+  execute: protectedProcedure
+    .input(workflowIdSchema)
+    .mutation(async ({ ctx, input }) => {
+      const workflow = await prisma.workflow.findUniqueOrThrow({
+        where: {
+          id: input.workflowId,
+          userId: ctx.auth.user.id,
+        },
+      });
+
+      await inngest.send({
+        name: "workflows/execute.workflow",
+        data: {
+          workflowId: input.workflowId,
+        },
+      });
+
+      return workflow;
+    }),
   create: premiumProcedure.mutation(async ({ ctx }) => {
     const slug = generateSlug(3);
     return prisma.workflow.create({
