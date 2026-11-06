@@ -49,6 +49,7 @@ export const HttpRequestDialog = ({
   const form = useForm<ExecutionFormData>({
     resolver: zodResolver(exectionFormSchema),
     defaultValues: {
+      variableName: defaultValues.variableName || "",
       endpoint: defaultValues.endpoint || "",
       method: defaultValues.method || "GET",
       body: defaultValues.body || "",
@@ -58,6 +59,7 @@ export const HttpRequestDialog = ({
   useEffect(() => {
     if (open) {
       form.reset({
+        variableName: defaultValues.variableName || "",
         endpoint: defaultValues.endpoint || "",
         method: defaultValues.method || "GET",
         body: defaultValues.body || "",
@@ -65,6 +67,7 @@ export const HttpRequestDialog = ({
     }
   }, [open, defaultValues, form]);
 
+  const watchVariableName = form.watch("variableName") || "myApiCall";
   const watchedMethod = form.watch("method");
   const showBodyField = ["POST", "PUT", "PATCH"].includes(watchedMethod);
 
@@ -85,6 +88,31 @@ export const HttpRequestDialog = ({
         </DialogHeader>
         <form id="form-rhf-demo" onSubmit={form.handleSubmit(handleSubmitForm)}>
           <FieldGroup>
+            <Controller
+              name="variableName"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="form-rhf-demo-variableName">
+                    Variable Name
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id="form-rhf-demo-variableName"
+                    placeholder="myApiCall"
+                    aria-invalid={fieldState.invalid}
+                    autoComplete="off"
+                  />
+                  <FieldDescription>
+                    Use this name to reference the result in other nodes:{" "}
+                    {`{{${watchVariableName}.httpResponse.data}}`}
+                  </FieldDescription>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
             <Controller
               name="method"
               control={form.control}
