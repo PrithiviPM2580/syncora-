@@ -2,6 +2,7 @@ import { NonRetriableError } from "inngest";
 import type { NodeType } from "@/generated/prisma/enums";
 import prisma from "@/lib/db";
 import { getExecutor } from "@/lib/executor-registry";
+import { publishRealtime } from "@/lib/realtime";
 import { inngest } from "./client";
 import { topologicalSort } from "./utils";
 
@@ -9,6 +10,7 @@ export const executeWorkflow = inngest.createFunction(
   {
     id: "execute-workflow",
     name: "Execute Workflow",
+    retries: 0,
     triggers: { event: "workflows/execute.workflow" },
   },
   async ({ event, step }) => {
@@ -41,6 +43,7 @@ export const executeWorkflow = inngest.createFunction(
         nodeId: node.id,
         context,
         step,
+        publish: publishRealtime(step),
       });
     }
 
