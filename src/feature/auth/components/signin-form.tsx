@@ -69,7 +69,7 @@ export default function SignInForm() {
             <Field orientation="vertical">
               <Button type="button" variant="outline">
                 <Image
-                  src="./logos/google.svg"
+                  src="/logos/google.svg"
                   alt="Google"
                   width={20}
                   height={20}
@@ -78,7 +78,7 @@ export default function SignInForm() {
               </Button>
               <Button type="button" variant="outline">
                 <Image
-                  src="./logos/github.svg"
+                  src="/logos/github.svg"
                   alt="Github"
                   width={20}
                   height={20}

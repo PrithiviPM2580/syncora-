@@ -15,7 +15,6 @@ export const ExecuteWorkflowButton = ({
 
   return (
     <Button
-      size="lg"
       onClick={handleExecuteWorkflow}
       disabled={executeWorkflow.isPending}
     >

@@ -8,7 +8,7 @@ export const exectionFormSchema = z.object({
       /^[a-zA-Z_][a-zA-Z0-9_]*$/,
       "Variable name must start with a letter or underscore and can only contain letters, numbers, and underscores",
     ),
-  endpoint: z.url("Please enter a valid URL"),
+  endpoint: z.string("Please enter a valid URL").min(1, "Endpoint is required"),
   method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
   body: z.string().optional(),
 });
