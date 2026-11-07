@@ -1,31 +1,59 @@
 "use client";
 
-import { useRealtime } from "inngest/react";
+import type { Realtime } from "inngest";
+import { type ClientSubscriptionToken, useRealtime } from "inngest/react";
 import { useEffect, useState } from "react";
 import type { NodeStatus } from "@/components/react-flow/node-status-indicator";
-import { httpRequestChannel } from "@/inngest/channels/http-request";
-import { fetchHttpRequestRealtimeToken } from "../components/http-request/actions";
 
 interface NodeStatusProps {
   nodeId: string;
+  channel: Realtime.ChannelInput;
+  topics: Readonly<string[]>;
+  token: () => Promise<ClientSubscriptionToken>;
 }
 
-export function useNodeStatus({ nodeId }: NodeStatusProps) {
+const isNodeStatusMessage = (
+  data: unknown,
+): data is { nodeId: string; status: NodeStatus } =>
+  typeof data === "object" &&
+  data !== null &&
+  "nodeId" in data &&
+  typeof data.nodeId === "string" &&
+  "status" in data &&
+  (data.status === "initial" ||
+    data.status === "loading" ||
+    data.status === "success" ||
+    data.status === "error");
+
+export function useNodeStatus({
+  nodeId,
+  channel,
+  topics,
+  token,
+}: NodeStatusProps) {
   const [status, setStatus] = useState<NodeStatus>("initial");
 
   const { messages, connectionStatus } = useRealtime({
-    channel: httpRequestChannel,
-    topics: ["status"] as const,
-    token: fetchHttpRequestRealtimeToken,
+    channel: channel,
+    topics,
+    token,
   });
 
   useEffect(() => {
-    const message = messages.byTopic.status?.data;
+    const latestMessage = [...messages.all]
+      .reverse()
+      .find(
+        (message) =>
+          message.kind !== "run" &&
+          message.topic === "status" &&
+          isNodeStatusMessage(message.data) &&
+          message.data.nodeId === nodeId,
+      );
 
-    if (message?.nodeId === nodeId) {
-      setStatus(message.status);
+    if (latestMessage && isNodeStatusMessage(latestMessage.data)) {
+      setStatus(latestMessage.data.status);
     }
-  }, [messages.byTopic.status, nodeId]);
+  }, [messages.all, nodeId]);
 
   return {
     status,

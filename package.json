@@ -15,7 +15,8 @@
     "db:studio": "prisma studio",
     "db:push": "prisma db push",
     "inngest:dev": "inngest-cli dev",
-    "dev:all": "mprocs",
+    "ngrok:dev": "dotenv run -- ngrok http --url=$NGROK_URL 3000",
+    "dev:all": "dotenv run -- mprocs",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -73,6 +74,7 @@
     "@types/react-dom": "^19",
     "@types/toposort": "^2.0.7",
     "babel-plugin-react-compiler": "1.0.0",
+    "dotenv-cli": "^11.1.0",
     "husky": "^9.1.7",
     "inngest-cli": "^1.49.0",
     "lint-staged": "^17.6.0",
