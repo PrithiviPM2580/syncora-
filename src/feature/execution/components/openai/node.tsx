@@ -11,6 +11,7 @@ import { OpenaiDialog } from "./dialog";
 
 type OpenaiNodeData = {
   variableName?: string;
+  credentialId?: string;
   systemPrompt?: string;
   userPrompt?: string;
 };

@@ -1,4 +1,5 @@
 import { FolderOpenIcon, HistoryIcon, KeyIcon } from "lucide-react";
+import { CredentialType } from "@/generated/prisma/enums";
 
 export const menuItems = [
   {
@@ -29,3 +30,21 @@ export const PAGINATION = {
   MAX_PAGE_SIZE: 100,
   MIN_PAGE_SIZE: 1,
 };
+
+export const CREDENTIAL_TYPE_OPTIONS = [
+  {
+    value: CredentialType.GEMINI,
+    label: "Gemini",
+    logo: "/logos/gemini.svg",
+  },
+  {
+    value: CredentialType.OPENAI,
+    label: "OpenAI",
+    logo: "/logos/openai.svg",
+  },
+  {
+    value: CredentialType.ANTHROPIC,
+    label: "Anthropic",
+    logo: "/logos/anthropic.svg",
+  },
+];

@@ -1,8 +1,9 @@
-import { google } from "@ai-sdk/google";
+import { createGoogle } from "@ai-sdk/google";
 import { generateText } from "ai";
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
 import { type GeminiStatus, geminiChannel } from "@/inngest/channels/gemini";
+import prisma from "@/lib/db";
 import type { NodeExecutor } from "../../types";
 
 Handlebars.registerHelper("json", (context) => {
@@ -13,6 +14,7 @@ Handlebars.registerHelper("json", (context) => {
 
 export type GeminiData = {
   variableName?: string;
+  credentialId?: string;
   systemPrompt?: string;
   userPrompt?: string;
 };
@@ -37,6 +39,11 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
     throw new NonRetriableError("Gemini Node: Variable name is required.");
   }
 
+  if (!data.credentialId) {
+    await publishStatus("error");
+    throw new NonRetriableError("Gemini Node: Credential ID is required.");
+  }
+
   if (!data.userPrompt) {
     await publishStatus("error");
     throw new NonRetriableError("Gemini Node: User prompt is required.");
@@ -46,6 +53,23 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
     ? Handlebars.compile(data.systemPrompt)(context)
     : "You are a helpful assistant.";
   const userPrompt = Handlebars.compile(data.userPrompt)(context);
+
+  const credential = await step.run("get-credential", () => {
+    return prisma.credential.findUnique({
+      where: {
+        id: data.credentialId,
+      },
+    });
+  });
+
+  if (!credential) {
+    await publishStatus("error");
+    throw new NonRetriableError("Gemini Node: Credential not found.");
+  }
+
+  const google = createGoogle({
+    apiKey: credential.value,
+  });
 
   try {
     const { steps } = await step.ai.wrap("gemini-generate-text", generateText, {
