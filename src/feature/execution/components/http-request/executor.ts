@@ -6,7 +6,6 @@ import {
   type HttpRequestStatus,
   httpRequestChannel,
 } from "@/inngest/channels/http-request";
-import { publishRealtime } from "@/lib/realtime";
 import type { NodeExecutor } from "../../types";
 
 Handlebars.registerHelper("json", (context) => {
@@ -16,9 +15,9 @@ Handlebars.registerHelper("json", (context) => {
 });
 
 export type HttpRequestData = {
-  variableName: string;
-  endpoint: string;
-  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  variableName?: string;
+  endpoint?: string;
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: string;
 };
 
@@ -35,27 +34,30 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
       status,
     });
 
-  await publishStatus("loading");
-
-  if (!data.endpoint) {
-    await publishStatus("error");
-    throw new NonRetriableError("HTTP Request node: No endpoint is configured");
-  }
-
-  if (!data.variableName) {
-    await publishStatus("error");
-    throw new NonRetriableError(
-      "HTTP Request node: No variable name is configured",
-    );
-  }
-
-  if (!data.method) {
-    await publishStatus("error");
-    throw new NonRetriableError("HTTP Request node: No method is configured");
-  }
-
   try {
     const result = await step.run("http-request", async () => {
+      await publishStatus("loading");
+
+      if (!data.endpoint) {
+        await publishStatus("error");
+        throw new NonRetriableError(
+          "HTTP Request node: No endpoint is configured",
+        );
+      }
+
+      if (!data.variableName) {
+        await publishStatus("error");
+        throw new NonRetriableError(
+          "HTTP Request node: No variable name is configured",
+        );
+      }
+
+      if (!data.method) {
+        await publishStatus("error");
+        throw new NonRetriableError(
+          "HTTP Request node: No method is configured",
+        );
+      }
       const endpoint = Handlebars.compile(data.endpoint)(context);
       const method = data.method;
       const options: KyOptions = { method };

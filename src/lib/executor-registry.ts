@@ -11,6 +11,10 @@ import {
   type ManualTriggerData,
   manualTriggerExecutor,
 } from "@/feature/trigger/components/manual-trigger/executor";
+import {
+  type StripeTriggerData,
+  stripeTriggerExecutor,
+} from "@/feature/trigger/components/stripe-trigger/executor";
 import { NodeType } from "@/generated/prisma/enums";
 
 type NodeDataMap = {
@@ -18,6 +22,7 @@ type NodeDataMap = {
   [NodeType.MANUAL_TRIGGER]: ManualTriggerData;
   [NodeType.HTTP_REQUEST]: HttpRequestData;
   [NodeType.GOOGLE_FORM_TRIGGER]: GoogleFormTriggerData;
+  [NodeType.STRIPE_TRIGGER]: StripeTriggerData;
 };
 
 type ExecutorRegistry = {
@@ -29,6 +34,7 @@ export const executorRegistry: ExecutorRegistry = {
   [NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
   [NodeType.HTTP_REQUEST]: httpRequestExecutor,
   [NodeType.GOOGLE_FORM_TRIGGER]: googleFormTriggerExecutor,
+  [NodeType.STRIPE_TRIGGER]: stripeTriggerExecutor,
 };
 
 export const getExecutor = <T extends NodeType>(
