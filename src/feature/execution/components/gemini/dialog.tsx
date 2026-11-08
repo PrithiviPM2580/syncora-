@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,16 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useCredentialByType } from "@/feature/credential/hooks/use-credential";
+import { CredentialType } from "@/generated/prisma/enums";
 import { type GeminiFormData, geminiFormSchema } from "../../schema/execution";
 
 interface GeminiDialogProps {
@@ -36,10 +46,14 @@ export const GeminiDialog = ({
   onSubmit,
   defaultValues = {},
 }: GeminiDialogProps) => {
+  const { data: credentials, isPending } = useCredentialByType(
+    CredentialType.GEMINI,
+  );
   const form = useForm<GeminiFormData>({
     resolver: zodResolver(geminiFormSchema),
     defaultValues: {
       variableName: defaultValues.variableName || "",
+      credentialId: defaultValues.credentialId || "",
       systemPrompt: defaultValues.systemPrompt || "",
       userPrompt: defaultValues.userPrompt || "",
     },
@@ -49,6 +63,7 @@ export const GeminiDialog = ({
     if (open) {
       form.reset({
         variableName: defaultValues.variableName || "",
+        credentialId: defaultValues.credentialId || "",
         systemPrompt: defaultValues.systemPrompt || "",
         userPrompt: defaultValues.userPrompt || "",
       });
@@ -88,6 +103,50 @@ export const GeminiDialog = ({
                     aria-invalid={fieldState.invalid}
                     autoComplete="off"
                   />
+                  <FieldDescription>
+                    Use this name to reference the result in other nodes:{" "}
+                    {`{{${watchVariableName}.text}}`}
+                  </FieldDescription>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="credentialId"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="form-rhf-demo-credentialId">
+                    Gemini Credential
+                  </FieldLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={
+                      isPending || !credentials || credentials.length === 0
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a credential" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {credentials?.map((credential) => (
+                        <SelectItem key={credential.id} value={credential.id}>
+                          <div className="flex items-center gap-2">
+                            <Image
+                              src="/logos/gemini.svg"
+                              alt="Gemini"
+                              width={16}
+                              height={16}
+                            />
+                            {credential.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FieldDescription>
                     Use this name to reference the result in other nodes:{" "}
                     {`{{${watchVariableName}.text}}`}

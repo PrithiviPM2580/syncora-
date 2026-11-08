@@ -67,6 +67,7 @@ export const EntityHeader = ({
       {newButtonHref && !onNew && (
         <Button
           size="sm"
+          nativeButton={false}
           render={
             <Link href={newButtonHref} prefetch>
               <PlusIcon className="size-4" />

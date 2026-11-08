@@ -1,4 +1,4 @@
-import { anthropic } from "@ai-sdk/anthropic";
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
@@ -6,6 +6,7 @@ import {
   type AnthropicStatus,
   anthropicChannel,
 } from "@/inngest/channels/anthropic";
+import prisma from "@/lib/db";
 import type { NodeExecutor } from "../../types";
 
 Handlebars.registerHelper("json", (context) => {
@@ -16,6 +17,7 @@ Handlebars.registerHelper("json", (context) => {
 
 export type AnthropicData = {
   variableName?: string;
+  credentialId?: string;
   systemPrompt?: string;
   userPrompt?: string;
 };
@@ -40,6 +42,11 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
     throw new NonRetriableError("Anthropic Node: Variable name is required.");
   }
 
+  if (!data.credentialId) {
+    await publishStatus("error");
+    throw new NonRetriableError("Anthropic Node: Credential ID is required.");
+  }
+
   if (!data.userPrompt) {
     await publishStatus("error");
     throw new NonRetriableError("Anthropic Node: User prompt is required.");
@@ -49,6 +56,23 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
     ? Handlebars.compile(data.systemPrompt)(context)
     : "You are a helpful assistant.";
   const userPrompt = Handlebars.compile(data.userPrompt)(context);
+
+  const credential = await step.run("get-credential", () => {
+    return prisma.credential.findUnique({
+      where: {
+        id: data.credentialId,
+      },
+    });
+  });
+
+  if (!credential) {
+    await publishStatus("error");
+    throw new NonRetriableError("Anthropic Node: Credential not found.");
+  }
+
+  const anthropic = createAnthropic({
+    apiKey: credential.value,
+  });
 
   try {
     const { steps } = await step.ai.wrap(
