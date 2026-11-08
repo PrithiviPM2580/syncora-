@@ -29,15 +29,15 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  type ExecutionFormData,
-  exectionFormSchema,
+  type HttpRequestFormData,
+  httpRequestFormSchema,
 } from "../../schema/execution";
 
 interface HttpRequestDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: ExecutionFormData) => void;
-  defaultValues?: Partial<ExecutionFormData>;
+  onSubmit: (data: HttpRequestFormData) => void;
+  defaultValues?: Partial<HttpRequestFormData>;
 }
 
 export const HttpRequestDialog = ({
@@ -46,8 +46,8 @@ export const HttpRequestDialog = ({
   onSubmit,
   defaultValues = {},
 }: HttpRequestDialogProps) => {
-  const form = useForm<ExecutionFormData>({
-    resolver: zodResolver(exectionFormSchema),
+  const form = useForm<HttpRequestFormData>({
+    resolver: zodResolver(httpRequestFormSchema),
     defaultValues: {
       variableName: defaultValues.variableName || "",
       endpoint: defaultValues.endpoint || "",
@@ -71,8 +71,7 @@ export const HttpRequestDialog = ({
   const watchedMethod = form.watch("method");
   const showBodyField = ["POST", "PUT", "PATCH"].includes(watchedMethod);
 
-  const handleSubmitForm = (data: ExecutionFormData) => {
-    console.log("Form submitted with data:", data);
+  const handleSubmitForm = (data: HttpRequestFormData) => {
     onSubmit(data);
     onOpenChange(false);
   };

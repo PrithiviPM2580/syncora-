@@ -1,7 +1,19 @@
 import {
+  type AnthropicData,
+  anthropicExecutor,
+} from "@/feature/execution/components/anthropic/executor";
+import {
+  type GeminiData,
+  geminiExecutor,
+} from "@/feature/execution/components/gemini/executor";
+import {
   type HttpRequestData,
   httpRequestExecutor,
 } from "@/feature/execution/components/http-request/executor";
+import {
+  type OpenaiData,
+  openaiExecutor,
+} from "@/feature/execution/components/openai/executor";
 import type { NodeExecutor } from "@/feature/execution/types";
 import {
   type GoogleFormTriggerData,
@@ -23,6 +35,9 @@ type NodeDataMap = {
   [NodeType.HTTP_REQUEST]: HttpRequestData;
   [NodeType.GOOGLE_FORM_TRIGGER]: GoogleFormTriggerData;
   [NodeType.STRIPE_TRIGGER]: StripeTriggerData;
+  [NodeType.GEMINI]: GeminiData;
+  [NodeType.OPENAI]: OpenaiData;
+  [NodeType.ANTHROPIC]: AnthropicData;
 };
 
 type ExecutorRegistry = {
@@ -35,6 +50,9 @@ export const executorRegistry: ExecutorRegistry = {
   [NodeType.HTTP_REQUEST]: httpRequestExecutor,
   [NodeType.GOOGLE_FORM_TRIGGER]: googleFormTriggerExecutor,
   [NodeType.STRIPE_TRIGGER]: stripeTriggerExecutor,
+  [NodeType.GEMINI]: geminiExecutor,
+  [NodeType.OPENAI]: openaiExecutor,
+  [NodeType.ANTHROPIC]: anthropicExecutor,
 };
 
 export const getExecutor = <T extends NodeType>(
